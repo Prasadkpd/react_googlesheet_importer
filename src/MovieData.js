@@ -3,13 +3,16 @@ import Papa from "papaparse";
 
 const MovieData = () => {
   const [data, setData] = useState({});
-  Papa.parse("https://docs.google.com/spreadsheets/d/1SJ8LxWmaxKBTgDJLvfD9NZLctBT931x19--qH2yLxck/pub?output=csv", {
-    download: true,
-    header: true,
-    complete: (results) => {
-      setData(results.data);
-    },
-  });
+  Papa.parse(
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQpRGwrDuvb1eZiyUTWhPWIcmKrFiFYk-MR28hayZGs6wLTZ9mGZKl6nGPtO4HBf20Okw4b-Fasm55u/pub?output=csv",
+    {
+      download: true,
+      header: true,
+      complete: (results) => {
+        setData(results.data);
+      },
+    }
+  );
   const movies = Array.from(data);
   return (
     <ul>
