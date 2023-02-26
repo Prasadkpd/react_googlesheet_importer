@@ -1,70 +1,54 @@
-# Getting Started with Create React App
+### Build a React component that fetches data from Google Sheets
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Google Sheets can be used to provide a makeshift database that’s easy to modify for non-developers. It’s not the best solution for high traffic sites but works well for internal websites or when prototyping an app.
 
-## Available Scripts
+In this tutorial use Papa Parse to fetch data from a Google Sheet into React.
+[https://www.npmjs.com/package/tabletop](https://www.npmjs.com/package/tabletop)
 
-In the project directory, you can run:
+Let’s start by installing Papa Parse into our React application using NPM:
 
-### `npm start`
+    npm install papaparse`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+For this tutorial I’ve created a simple spreadsheet with the following data:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+![](https://w3collective.com/wp-content/uploads/2020/08/react-sheet-data.png)
 
-### `npm test`
+There are some requirements for the structure of this data:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- All columns must have a “label” in the first row and not contain any weird characters.
+- Google assumes an empty row is the end of the sheet and stops returning data.
 
-### `npm run build`
+Once the sheet is complete select “File” -> "Share" -> “Publish to web” so it’s publicly visible.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Now for the component, create a new MovieData.js file
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    import React, { useState } from "react";
+    import Papa from "papaparse";
+    
+    const MovieData = () => {
+      const [data, setData] = useState({});
+      Papa.parse(
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vQpRGwrDuvb1eZiyUTWhPWIcmKrFiFYk-MR28hayZGs6wLTZ9mGZKl6nGPtO4HBf20Okw4b-Fasm55u/pub?output=csv",
+        {
+          download: true,
+          header: true,
+          complete: (results) => {
+            setData(results.data);
+          },
+        }
+      );
+      const movies = Array.from(data);
+      return (
+        <ul>
+          {movies.map((data) => (
+            <li key={data.movie}>
+              {data.movie} ({data.year}) - Rating {data.rating}
+            </li>
+          ))}
+        </ul>
+      );
+    };
+    export default MovieData;
+ 
